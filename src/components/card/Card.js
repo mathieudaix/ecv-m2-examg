@@ -1,18 +1,32 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { ApplicationContext } from '../../domain/application.store';
-import { LikePictureById, unLikePictureById } from '../../domain/picture/picture.actions';
+import { LikePictureById, unLikePictureById, commentPictureById } from '../../domain/picture/picture.actions';
 import { LikeButton, BookmarkButton } from '../buttons';
 import './Card.css';
 
 
 export function Card({ picture }) {
-    const { state, dispatch } = useContext(ApplicationContext);
+    const
+        { state, dispatch } = useContext(ApplicationContext),
+        [comment, setComment] = useState({
+            comment: '',
+        })
 
     const onLike = (pictureId) => {
         if (picture.likedBy.find(like => like._id === state.user._id) === undefined)
             LikePictureById(dispatch, pictureId)
         else
             unLikePictureById(dispatch, pictureId)
+    }
+
+    const onChange = (e) => {
+        setComment({
+            comment: e.target.value
+        })
+    }
+
+    const postComment = (pictureId) => {
+        commentPictureById(dispatch, { pictureId, data: comment })
     }
 
     if (!state.user) return null
@@ -30,11 +44,17 @@ export function Card({ picture }) {
                 </h3>
                 <div className="card-comments">
                     Comments
-                    <ul>
-                        <li>
-                            Sample comment
-                        </li>
-                    </ul>
+                    {picture.comments.length > 0 && (
+                        <ul>
+                            {picture.comments.map(({ comment }, index) => (
+                                <li key={index}>{comment}</li>
+                            ))}
+                        </ul>
+                    )}
+                    <div>
+                        <input name="comment" placeholder="Add a comment..." type="text" onChange={onChange} />
+                        <button onClick={() => { postComment(picture.id); }}>Publish</button>
+                    </div>
                 </div>
             </div>
         </div>
