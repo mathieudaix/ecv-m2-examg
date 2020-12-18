@@ -9,7 +9,7 @@ export function Card({ picture }) {
     const { state, dispatch } = useContext(ApplicationContext);
 
     const onLike = (pictureId) => {
-        if (picture.likedBy.find(like => like === state.user._id) === undefined)
+        if (picture.likedBy.find(like => like._id === state.user._id) === undefined)
             LikePictureById(dispatch, pictureId)
         else
             unLikePictureById(dispatch, pictureId)
@@ -20,7 +20,7 @@ export function Card({ picture }) {
         <div className="card">
             <div className="card-img">
                 <img src={picture.download_url} alt="" />
-                <LikeButton onClick={() => { onLike(picture.id) }} isLiked={picture.likedBy && picture.likedBy.find(like => like === state.user._id)} />
+                <LikeButton onClick={() => { onLike(picture.id) }} isLiked={picture.likedBy && picture.likedBy.find(like => like._id === state.user._id)} />
                 <span className="likes">Likes : {picture.likedBy ? picture.likedBy.length : 0}</span>
                 <BookmarkButton onClick={() => { }} />
             </div>
